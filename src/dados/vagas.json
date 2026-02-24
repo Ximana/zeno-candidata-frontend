@@ -1,0 +1,30 @@
+[
+  {
+    "id": "1",
+    "titulo": "Desenvolvedor Frontend",
+    "descricao": "Responsável pelo desenvolvimento de interfaces web modernas e responsivas.",
+    "departamento": "Tecnologia",
+    "criadoEm": "2024-01-10T09:00:00Z"
+  },
+  {
+    "id": "2",
+    "titulo": "Gestor de Recursos Humanos",
+    "descricao": "Responsável pela gestão e recrutamento de colaboradores.",
+    "departamento": "RH",
+    "criadoEm": "2024-01-12T10:00:00Z"
+  },
+  {
+    "id": "3",
+    "titulo": "Analista Financeiro",
+    "descricao": "Análise e controlo de relatórios financeiros da empresa.",
+    "departamento": "Financeiro",
+    "criadoEm": "2024-01-18T11:00:00Z"
+  },
+  {
+    "id": "4",
+    "titulo": "Gestor de Projetos",
+    "descricao": "Coordenação e acompanhamento de projetos internos.",
+    "departamento": "Operações",
+    "criadoEm": "2024-01-22T14:00:00Z"
+  }
+]
