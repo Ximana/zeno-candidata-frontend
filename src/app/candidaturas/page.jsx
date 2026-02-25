@@ -16,118 +16,124 @@ import { mostrarSucesso, mostrarErro } from "@/utils/toast";
 import { formatarData, iniciais } from "@/utils/helpers";
 import { FileText, Plus, Pencil, Trash2 } from "lucide-react";
 
-// Cores para o badge de estado
 const coresEstado = {
   "Em análise": "bg-yellow-100 text-yellow-700",
-  Aprovado: "bg-emerald-100 text-emerald-700",
-  Reprovado: "bg-red-100 text-red-700",
+  Aprovado:     "bg-emerald-100 text-emerald-700",
+  Reprovado:    "bg-red-100 text-red-700",
 };
 
 export default function PaginaCandidaturas() {
   const [candidaturas, setCandidaturas] = useState([]);
-  const [candidatos, setCandidatos] = useState([]);
-  const [vagas, setVagas] = useState([]);
-  const [modalAberto, setModalAberto] = useState(false);
-  const [candidaturaSelecionada, setCandidaturaSelecionada] = useState(null);
+  const [candidatos, setCandidatos]     = useState([]);
+  const [vagas, setVagas]               = useState([]);
+  const [carregando, setCarregando]     = useState(true);
+  const [modalAberto, setModalAberto]   = useState(false);
+  const [seleccionada, setSeleccionada] = useState(null);
 
-  // Carrega dados ao montar a página
   useEffect(() => {
-    setCandidaturas(listarCandidaturas());
-    setCandidatos(listarCandidatos());
-    setVagas(listarVagas());
+    async function carregar() {
+      try {
+        const [c, ca, v] = await Promise.all([
+          listarCandidatos(),
+          listarCandidaturas(),
+          listarVagas(),
+        ]);
+        setCandidatos(c);
+        setCandidaturas(ca);
+        setVagas(v);
+      } catch {
+        mostrarErro("Erro ao carregar dados.");
+      } finally {
+        setCarregando(false);
+      }
+    }
+    carregar();
   }, []);
 
-  function abrirNovoModal() {
-    setCandidaturaSelecionada(null);
+  function abrirModal(candidatura = null) {
+    setSeleccionada(candidatura);
     setModalAberto(true);
   }
 
-  function abrirEditarModal(candidatura) {
-    setCandidaturaSelecionada(candidatura);
-    setModalAberto(true);
-  }
-
-  function aoSalvar(dados) {
+  async function aoSalvar(dados) {
     try {
-      if (candidaturaSelecionada) {
-        const atualizada = atualizarCandidatura(candidaturaSelecionada.id, dados);
-        setCandidaturas((prev) =>
-          prev.map((c) => (c.id === candidaturaSelecionada.id ? atualizada : c))
-        );
+      if (seleccionada) {
+        const atualizada = await atualizarCandidatura(seleccionada.id, dados);
+        setCandidaturas((prev) => prev.map((c) => (c.id === seleccionada.id ? atualizada : c)));
         mostrarSucesso("Candidatura actualizada!");
       } else {
-        const nova = criarCandidatura(dados);
+        const nova = await criarCandidatura(dados);
         setCandidaturas((prev) => [nova, ...prev]);
-        mostrarSucesso("Candidatura registada com sucesso!");
+        mostrarSucesso("Candidatura registada!");
       }
-    } catch {
-      mostrarErro("Ocorreu um erro. Tente novamente.");
+    } catch (err) {
+      mostrarErro(err.message || "Ocorreu um erro.");
     }
   }
 
-  function aoRemover(id) {
+  async function aoRemover(id) {
     try {
-      removerCandidatura(id);
+      await removerCandidatura(id);
       setCandidaturas((prev) => prev.filter((c) => c.id !== id));
       mostrarSucesso("Candidatura removida!");
-    } catch {
-      mostrarErro("Erro ao remover candidatura.");
+    } catch (err) {
+      mostrarErro(err.message || "Erro ao remover.");
     }
   }
 
-  // Helpers para encontrar nome do candidato/vaga pelo id
-  function nomeCandidato(id) {
-    return candidatos.find((c) => c.id === id);
-  }
-  function nomeVaga(id) {
-    return vagas.find((v) => v.id === id);
-  }
+  const getCandidato = (c) => c.candidato || candidatos.find((cd) => cd.id === c.candidatoId);
+  const getVaga      = (c) => c.vaga      || vagas.find((v) => v.id === c.vagaId);
 
   return (
     <div className="flex flex-col flex-1">
       <Header titulo="Candidaturas" />
 
       <div className="p-4 lg:p-6 flex flex-col gap-6">
+
         {/* Topo */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Candidaturas</h1>
-            <p className="text-sm text-gray-400 mt-0.5">
-              {candidaturas.length} candidaturas registadas
-            </p>
+            <p className="text-sm text-gray-400 mt-0.5">{candidaturas.length} registadas</p>
           </div>
-          <Botao variante="primario" onClick={abrirNovoModal}>
-            <Plus size={16} />
-            Nova Candidatura
+          <Botao variante="primario" onClick={() => abrirModal()}>
+            <Plus size={16} /> Nova Candidatura
           </Botao>
         </div>
 
-        {/* Tabela — em mobile vira cartões */}
-        {candidaturas.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">
-            <FileText size={48} className="mx-auto mb-3 opacity-30" />
+        {/* Conteúdo */}
+        {carregando ? (
+          <div className="flex flex-col gap-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-16 bg-white rounded-xl border border-gray-100 animate-pulse" />
+            ))}
+          </div>
+
+        ) : candidaturas.length === 0 ? (
+          <div className="text-center py-20 text-gray-400">
+            <FileText size={44} className="mx-auto mb-3 opacity-30" />
             <p className="text-sm">Nenhuma candidatura registada.</p>
           </div>
+
         ) : (
           <>
-            {/* Versão desktop: tabela */}
-            <div className="hidden sm:block bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+            {/* Desktop tabela */}
+            <div className="hidden md:block bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
               <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-gray-100">
-                    <th className="text-left px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">Candidato</th>
-                    <th className="text-left px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">Vaga</th>
-                    <th className="text-left px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">Estado</th>
-                    <th className="text-left px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">Data</th>
-                    <th className="text-left px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">Acções</th>
+                <thead className="bg-gray-50 border-b border-gray-100">
+                  <tr>
+                    {["Candidato", "Vaga", "Estado", "Data", "Acções"].map((col) => (
+                      <th key={col} className="text-left px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                        {col}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
                   {candidaturas.map((c) => {
-                    const candidato = nomeCandidato(c.candidatoId);
-                    const vaga = nomeVaga(c.vagaId);
+                    const candidato = getCandidato(c);
+                    const vaga      = getVaga(c);
                     return (
-                      <tr key={c.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                      <tr key={c.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
                         <td className="px-5 py-3">
                           <div className="flex items-center gap-3">
                             {candidato?.foto ? (
@@ -146,19 +152,13 @@ export default function PaginaCandidaturas() {
                             {c.estado}
                           </span>
                         </td>
-                        <td className="px-5 py-3 text-gray-400">{formatarData(c.criadoEm)}</td>
+                        <td className="px-5 py-3 text-gray-400 whitespace-nowrap">{formatarData(c.criadoEm)}</td>
                         <td className="px-5 py-3">
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => abrirEditarModal(c)}
-                              className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
-                            >
+                          <div className="flex gap-1">
+                            <button onClick={() => abrirModal(c)} className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors">
                               <Pencil size={14} />
                             </button>
-                            <button
-                              onClick={() => aoRemover(c.id)}
-                              className="p-1.5 text-red-400 hover:bg-red-50 rounded-lg transition-colors"
-                            >
+                            <button onClick={() => aoRemover(c.id)} className="p-1.5 text-red-400 hover:bg-red-50 rounded-lg transition-colors">
                               <Trash2 size={14} />
                             </button>
                           </div>
@@ -170,35 +170,35 @@ export default function PaginaCandidaturas() {
               </table>
             </div>
 
-            {/* Versão mobile: cartões */}
-            <div className="sm:hidden flex flex-col gap-3">
+            {/* Mobile cartões */}
+            <div className="md:hidden flex flex-col gap-3">
               {candidaturas.map((c) => {
-                const candidato = nomeCandidato(c.candidatoId);
-                const vaga = nomeVaga(c.vagaId);
+                const candidato = getCandidato(c);
+                const vaga      = getVaga(c);
                 return (
                   <div key={c.id} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col gap-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-3 min-w-0">
                         {candidato?.foto ? (
-                          <img src={candidato.foto} alt="" className="w-8 h-8 rounded-full object-cover" />
+                          <img src={candidato.foto} alt="" className="w-9 h-9 rounded-full object-cover shrink-0" />
                         ) : (
-                          <div className="w-8 h-8 rounded-full bg-[#006B4F] text-white flex items-center justify-center text-xs font-bold">
+                          <div className="w-9 h-9 rounded-full bg-[#006B4F] text-white flex items-center justify-center text-xs font-bold shrink-0">
                             {iniciais(candidato?.nomeCompleto || "?")}
                           </div>
                         )}
-                        <div>
-                          <p className="text-sm font-semibold text-gray-700">{candidato?.nomeCompleto || "—"}</p>
-                          <p className="text-xs text-gray-400">{vaga?.titulo || "—"}</p>
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-gray-800 truncate">{candidato?.nomeCompleto || "—"}</p>
+                          <p className="text-xs text-gray-400 truncate">{vaga?.titulo || "—"}</p>
                         </div>
                       </div>
-                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${coresEstado[c.estado]}`}>
+                      <span className={`shrink-0 px-2.5 py-0.5 rounded-full text-xs font-medium ${coresEstado[c.estado]}`}>
                         {c.estado}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between pt-2 border-t border-gray-50">
                       <span className="text-xs text-gray-400">{formatarData(c.criadoEm)}</span>
-                      <div className="flex gap-2">
-                        <button onClick={() => abrirEditarModal(c)} className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors">
+                      <div className="flex gap-1">
+                        <button onClick={() => abrirModal(c)} className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors">
                           <Pencil size={14} />
                         </button>
                         <button onClick={() => aoRemover(c.id)} className="p-1.5 text-red-400 hover:bg-red-50 rounded-lg transition-colors">
@@ -214,11 +214,10 @@ export default function PaginaCandidaturas() {
         )}
       </div>
 
-      {/* Modal */}
       <ModalFormularioCandidatura
         aberto={modalAberto}
         aoFechar={() => setModalAberto(false)}
-        candidatura={candidaturaSelecionada}
+        candidatura={seleccionada}
         candidatos={candidatos}
         vagas={vagas}
         aoSalvar={aoSalvar}

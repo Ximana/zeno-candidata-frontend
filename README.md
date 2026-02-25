@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Zeno candidta app - Frontend
 
-## Getting Started
+Interface web do app, desenvolvida com **Next.js** e **Tailwind CSS**. Consome a [Zeno candidata - API](https://github.com/Ximana/zeno-candidata-api.git) para gerir candidatos, vagas e candidaturas.
 
-First, run the development server:
+## Tecnologias
 
+| Tecnologia | Função |
+|------------|--------|
+| Next.js 14 | Framework React com App Router |
+| Tailwind CSS | Estilização |
+| Lucide React | Ícones |
+| React Toastify | Notificações |
+
+---
+
+## Pré-requisitos
+- [Node.js] v18 ou superior
+- A **API Zeno candidata API** a correr em `http://localhost:3001`
+
+---
+
+## Instalação
+
+**1. Instalar dependências**
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**2. Configurar a variável de ambiente**
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Cria um ficheiro `.env.local` na raiz do projecto:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3001/api
+```
 
-## Learn More
+> Este é o endereço da API Express. Altera o valor se a API estiver noutro host ou porta.
 
-To learn more about Next.js, take a look at the following resources:
+**3. Iniciar o servidor de desenvolvimento**
+```bash
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Aplicação disponível em: **http://localhost:3000**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Comando | Descrição |
+|---------|-----------|
+| `npm run dev` | Inicia em modo desenvolvimento |
+| `npm run build` | Compila para produção |
+| `npm start` | Inicia a versão de produção (requer build) |
+| `npm run lint` | Verifica erros de código |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Estrutura do projecto
+
+```
+my-app/
+├── src/
+│   ├── app/                        # Páginas (Next.js App Router)
+│   │   ├── page.jsx                # Dashboard
+│   │   ├── candidatos/page.jsx     # Gestão de candidatos
+│   │   ├── vagas/page.jsx          # Gestão de vagas
+│   │   ├── candidaturas/page.jsx   # Gestão de candidaturas
+│   │   ├── layout.jsx              # Layout global
+│   │   └── globals.css             # Estilos globais
+│   │
+│   ├── componentes/
+│   │   ├── layout/                 # Sidebar, Header
+│   │   ├── ui/                     # Componentes reutilizáveis (Button, Input, Modal, etc.)
+│   │   ├── candidatos/             # CardCandidato, ListaCandidatos, Modais
+│   │   ├── vagas/                  # ModalFormularioVaga
+│   │   └── candidaturas/           # ModalFormularioCandidatura
+│   │
+│   ├── hooks/
+│   │   ├── useCandidatos.js        # Estado e operações de candidatos
+│   │   ├── useVagas.js             # Estado e operações de vagas
+│   │   └── useCandidaturas.js      # Estado e operações de candidaturas
+│   │
+│   ├── servicos/
+│   │   ├── api.js                  # Funções base de fetch (pedido, pedidoFormData)
+│   │   ├── candidatoServico.js     # Chamadas à API de candidatos
+│   │   ├── vagaServico.js          # Chamadas à API de vagas
+│   │   └── candidaturaServico.js   # Chamadas à API de candidaturas
+│   │
+│   └── utils/
+│       ├── constantes.js           # Províncias, géneros, graus académicos, etc.
+│       ├── helpers.js              # formatarData
+│       └── toast.js                # Helpers para notificações
+│
+├── .env.exemplo                      # Variáveis de ambiente de exemplo
+├── next.config.js
+├── tailwind.config.js
+└── package.json
+```
+---

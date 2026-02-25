@@ -1,27 +1,27 @@
-import vagasData from "@/dados/vagas.json";
-import { gerarId } from "@/utils/helpers";
+import { pedido } from "./api";
 
-let vagas = [...vagasData];
-
-export function listarVagas() {
-  return vagas;
+export async function listarVagas() {
+  return pedido("/vagas");
 }
 
-export function criarVaga(dados) {
-  const nova = {
-    ...dados,
-    id: gerarId(),
-    criadoEm: new Date().toISOString(),
-  };
-  vagas = [nova, ...vagas];
-  return nova;
+export async function buscarVagaPorId(id) {
+  return pedido(`/vagas/${id}`);
 }
 
-export function atualizarVaga(id, dados) {
-  vagas = vagas.map((v) => (v.id === id ? { ...v, ...dados } : v));
-  return vagas.find((v) => v.id === id);
+export async function criarVaga(dados) {
+  return pedido("/vagas", {
+    method: "POST",
+    body: JSON.stringify(dados),
+  });
 }
 
-export function removerVaga(id) {
-  vagas = vagas.filter((v) => v.id !== id);
+export async function atualizarVaga(id, dados) {
+  return pedido(`/vagas/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(dados),
+  });
+}
+
+export async function removerVaga(id) {
+  return pedido(`/vagas/${id}`, { method: "DELETE" });
 }

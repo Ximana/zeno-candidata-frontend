@@ -14,11 +14,22 @@ export function useCandidatos() {
   const [carregando, setCarregando] = useState(true);
   const [pesquisa, setPesquisa] = useState("");
 
+  // Carrega candidatos da API ao montar
   useEffect(() => {
-    setCandidatos(listarCandidatos());
-    setCarregando(false);
+    async function carregar() {
+      try {
+        const dados = await listarCandidatos();
+        setCandidatos(dados);
+      } catch {
+        mostrarErro("Erro ao carregar candidatos.");
+      } finally {
+        setCarregando(false);
+      }
+    }
+    carregar();
   }, []);
 
+  // Filtragem local (não precisa chamar a API para pesquisar)
   const candidatosFiltrados = candidatos.filter((c) => {
     const termo = pesquisa.toLowerCase();
     return (
@@ -28,39 +39,38 @@ export function useCandidatos() {
     );
   });
 
-  function adicionar(dados) {
+  // ficheiro é o File do input, dados são os campos de texto
+  async function adicionar(dados, ficheiro) {
     try {
-      const novo = criarCandidato(dados);
+      const novo = await criarCandidato(dados, ficheiro);
       setCandidatos((prev) => [novo, ...prev]);
       mostrarSucesso("Candidato cadastrado com sucesso!");
       return true;
-    } catch {
-      mostrarErro("Erro ao cadastrar candidato.");
+    } catch (err) {
+      mostrarErro(err.message || "Erro ao cadastrar candidato.");
       return false;
     }
   }
 
-  function atualizar(id, dados) {
+  async function atualizar(id, dados, ficheiro) {
     try {
-      const atualizado = atualizarCandidato(id, dados);
-      setCandidatos((prev) =>
-        prev.map((c) => (c.id === id ? atualizado : c))
-      );
-      mostrarSucesso("Candidato atualizado com sucesso!");
+      const atualizado = await atualizarCandidato(id, dados, ficheiro);
+      setCandidatos((prev) => prev.map((c) => (c.id === id ? atualizado : c)));
+      mostrarSucesso("Candidato actualizado com sucesso!");
       return true;
-    } catch {
-      mostrarErro("Erro ao atualizar candidato.");
+    } catch (err) {
+      mostrarErro(err.message || "Erro ao actualizar candidato.");
       return false;
     }
   }
 
-  function remover(id) {
+  async function remover(id) {
     try {
-      removerCandidato(id);
+      await removerCandidato(id);
       setCandidatos((prev) => prev.filter((c) => c.id !== id));
       mostrarSucesso("Candidato removido com sucesso!");
-    } catch {
-      mostrarErro("Erro ao remover candidato.");
+    } catch (err) {
+      mostrarErro(err.message || "Erro ao remover candidato.");
     }
   }
 

@@ -5,24 +5,20 @@ import Modal from "@/componentes/ui/Modal";
 import Input from "@/componentes/ui/Input";
 import Botao from "@/componentes/ui/Button";
 
-const VAGA_VAZIA = {
-  titulo: "",
-  descricao: "",
-  departamento: "",
-};
+const VAZIO = { titulo: "", descricao: "", departamento: "" };
 
-export default function ModalFormularioVaga({ aberto, aoFechar, vaga, aoSalvar }) {
-  const [form, setForm] = useState(VAGA_VAZIA);
+export default function ModalFormularioVaga({
+  aberto,
+  aoFechar,
+  vaga,
+  aoSalvar,
+}) {
+  const [form, setForm] = useState(VAZIO);
   const [erros, setErros] = useState({});
-
   const modoEdicao = !!vaga;
 
   useEffect(() => {
-    if (vaga) {
-      setForm({ ...VAGA_VAZIA, ...vaga });
-    } else {
-      setForm(VAGA_VAZIA);
-    }
+    setForm(vaga ? { ...VAZIO, ...vaga } : VAZIO);
     setErros({});
   }, [vaga, aberto]);
 
@@ -32,18 +28,13 @@ export default function ModalFormularioVaga({ aberto, aoFechar, vaga, aoSalvar }
     if (erros[name]) setErros((prev) => ({ ...prev, [name]: "" }));
   }
 
-  function validar() {
-    const novosErros = {};
-    if (!form.titulo.trim()) novosErros.titulo = "Campo obrigatório";
-    if (!form.departamento.trim()) novosErros.departamento = "Campo obrigatório";
-    return novosErros;
-  }
-
   function aoSubmeter(e) {
     e.preventDefault();
-    const novosErros = validar();
-    if (Object.keys(novosErros).length > 0) {
-      setErros(novosErros);
+    const ev = {};
+    if (!form.titulo.trim()) ev.titulo = "Obrigatório";
+    if (!form.departamento.trim()) ev.departamento = "Obrigatório";
+    if (Object.keys(ev).length > 0) {
+      setErros(ev);
       return;
     }
     aoSalvar(form);
@@ -59,7 +50,7 @@ export default function ModalFormularioVaga({ aberto, aoFechar, vaga, aoSalvar }
     >
       <form onSubmit={aoSubmeter} className="p-6 flex flex-col gap-4">
         <Input
-          label="Título da Vaga"
+          label="Título"
           nome="titulo"
           valor={form.titulo}
           aoMudar={aoMudar}
@@ -77,25 +68,22 @@ export default function ModalFormularioVaga({ aberto, aoFechar, vaga, aoSalvar }
           erro={erros.departamento}
         />
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gray-700">
-            Descrição
-          </label>
+          <label className="text-sm font-medium text-gray-700">Descrição</label>
           <textarea
             name="descricao"
             value={form.descricao}
             onChange={aoMudar}
-            rows={4}
-            placeholder="Descreva as responsabilidades e requisitos da vaga..."
+            rows={3}
+            placeholder="Descrição da vaga..."
             className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#006B4F] focus:border-transparent transition-all resize-none"
           />
         </div>
-
         <div className="flex justify-end gap-3 pt-2 border-t border-gray-100">
           <Botao variante="fantasma" onClick={aoFechar} tipo="button">
             Cancelar
           </Botao>
           <Botao tipo="submit" variante="primario">
-            {modoEdicao ? "Guardar alterações" : "Criar vaga"}
+            {modoEdicao ? "Guardar" : "Criar vaga"}
           </Botao>
         </div>
       </form>

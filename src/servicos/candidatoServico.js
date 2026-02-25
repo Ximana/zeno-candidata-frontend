@@ -1,33 +1,81 @@
-import candidatosData from "@/dados/candidatos.json";
-import { gerarId } from "@/utils/helpers";
+import { pedido, pedidoFormData } from "./api";
 
-let candidatos = [...candidatosData];
-
-export function listarCandidatos() {
-  return candidatos;
+export async function listarCandidatos() {
+  return pedido("/candidatos");
 }
 
-export function buscarCandidatoPorId(id) {
-  return candidatos.find((c) => c.id === id) || null;
+export async function buscarCandidatoPorId(id) {
+  return pedido(`/candidatos/${id}`);
 }
 
-export function criarCandidato(dados) {
-  const novo = {
-    ...dados,
-    id: gerarId(),
-    criadoEm: new Date().toISOString(),
-  };
-  candidatos = [novo, ...candidatos];
-  return novo;
+// Criar candidato usa FormData por causa do upload de foto
+export async function criarCandidato(dados, ficheiro) {
+  const formData = new FormData();
+
+  // Adiciona todos os campos de texto ao FormData
+  Object.entries(dados).forEach(([chave, valor]) => {
+    if (valor !== null && valor !== undefined && valor !== "") {
+      formData.append(chave, valor);
+    }
+  });
+
+  // Adiciona a foto se existir
+  if (ficheiro) {
+    formData.append("foto", ficheiro);
+  }
+
+  return pedidoFormData("/candidatos", {
+    method: "POST",
+    body: formData,
+  });
 }
 
-export function atualizarCandidato(id, dados) {
-  candidatos = candidatos.map((c) =>
-    c.id === id ? { ...c, ...dados } : c
-  );
-  return candidatos.find((c) => c.id === id);
+// Actualizar candidato também usa FormData (pode ter nova foto)
+export async function atualizarCandidato(id, dados, ficheiro) {
+  const formData = new FormData();
+
+  Object.entries(dados).forEach(([chave, valor]) => {
+    if (valor !== null && valor !== undefined && valor !== "") {
+      formData.append(chave, valor);
+    }
+  });
+
+  if (ficheiro) {
+    formData.append("foto", ficheiro);
+  }
+
+  return pedidoFormData(`/candidatos/${id}`, {
+    method: "PUT",
+    body: formData,
+  });
 }
 
-export function removerCandidato(id) {
-  candidatos = candidatos.filter((c) => c.id !== id);
+export async function removerCandidato(id) {
+  return pedido(`/candidatos/${id}`, { method: "DELETE" });
+}
+
+// --- Formações (aninhadas no candidato) ---
+
+export async function listarFormacoesPorCandidato(candidatoId) {
+  return pedido(`/candidatos/${candidatoId}/formacoes`);
+}
+
+export async function criarFormacao(candidatoId, dados) {
+  return pedido(`/candidatos/${candidatoId}/formacoes`, {
+    method: "POST",
+    body: JSON.stringify(dados),
+  });
+}
+
+export async function atualizarFormacao(candidatoId, formacaoId, dados) {
+  return pedido(`/candidatos/${candidatoId}/formacoes/${formacaoId}`, {
+    method: "PUT",
+    body: JSON.stringify(dados),
+  });
+}
+
+export async function removerFormacao(candidatoId, formacaoId) {
+  return pedido(`/candidatos/${candidatoId}/formacoes/${formacaoId}`, {
+    method: "DELETE",
+  });
 }

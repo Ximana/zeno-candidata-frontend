@@ -1,29 +1,27 @@
-import candidaturasData from "@/dados/candidaturas.json";
-import { gerarId } from "@/utils/helpers";
+import { pedido } from "./api";
 
-let candidaturas = [...candidaturasData];
-
-export function listarCandidaturas() {
-  return candidaturas;
+export async function listarCandidaturas() {
+  return pedido("/candidaturas");
 }
 
-export function criarCandidatura(dados) {
-  const nova = {
-    ...dados,
-    id: gerarId(),
-    criadoEm: new Date().toISOString(),
-  };
-  candidaturas = [nova, ...candidaturas];
-  return nova;
+export async function buscarCandidaturaPorId(id) {
+  return pedido(`/candidaturas/${id}`);
 }
 
-export function atualizarCandidatura(id, dados) {
-  candidaturas = candidaturas.map((c) =>
-    c.id === id ? { ...c, ...dados } : c,
-  );
-  return candidaturas.find((c) => c.id === id);
+export async function criarCandidatura(dados) {
+  return pedido("/candidaturas", {
+    method: "POST",
+    body: JSON.stringify(dados),
+  });
 }
 
-export function removerCandidatura(id) {
-  candidaturas = candidaturas.filter((c) => c.id !== id);
+export async function atualizarCandidatura(id, dados) {
+  return pedido(`/candidaturas/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(dados),
+  });
+}
+
+export async function removerCandidatura(id) {
+  return pedido(`/candidaturas/${id}`, { method: "DELETE" });
 }
