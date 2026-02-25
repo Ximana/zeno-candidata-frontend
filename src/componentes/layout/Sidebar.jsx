@@ -41,7 +41,7 @@ export default function Sidebar() {
             <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
               <Users size={18} className="text-[#006B4F]" />
             </div>
-            <span className="text-white font-bold text-lg">RecrutaApp</span>
+            <span className="text-white font-bold text-lg">Zeno App</span>
           </div>
 
           <button
@@ -74,9 +74,6 @@ export default function Sidebar() {
           })}
         </nav>
 
-        <div className="px-6 py-4 border-t border-white/10">
-          <p className="text-white/40 text-xs">© 2024 RecrutaApp</p>
-        </div>
       </aside>
     </>
   );

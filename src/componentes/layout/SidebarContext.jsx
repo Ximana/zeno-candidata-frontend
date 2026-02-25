@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState } from "react";
 
-// Criamos um contexto para partilhar o estado da sidebar entre componentes
+// Contexto para partilhar o estado da sidebar entre componentes
 const SidebarContext = createContext(null);
 
 // Este provider envolve toda a aplicação e guarda o estado aberta/fechada
@@ -28,7 +28,7 @@ export function SidebarProvider({ children }) {
   );
 }
 
-// Hook para usar o contexto facilmente em qualquer componente
+// Hook para usar o contexto qualquer componente
 export function useSidebar() {
   const contexto = useContext(SidebarContext);
   if (!contexto) {
