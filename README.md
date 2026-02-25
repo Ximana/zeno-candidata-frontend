@@ -14,7 +14,7 @@ Interface web do app, desenvolvida com **Next.js** e **Tailwind CSS**. Consome a
 ---
 
 ## Pré-requisitos
-- [Node.js] v18 ou superior
+- Node.js
 - A **API Zeno candidata API** a correr em `http://localhost:3001`
 
 ---
@@ -42,17 +42,6 @@ npm run dev
 ```
 
 Aplicação disponível em: **http://localhost:3000**
-
----
-
-## Scripts
-
-| Comando | Descrição |
-|---------|-----------|
-| `npm run dev` | Inicia em modo desenvolvimento |
-| `npm run build` | Compila para produção |
-| `npm start` | Inicia a versão de produção (requer build) |
-| `npm run lint` | Verifica erros de código |
 
 ---
 

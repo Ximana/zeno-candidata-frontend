@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "next build"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "dependencies": {
     "lucide-react": "^0.575.0",
