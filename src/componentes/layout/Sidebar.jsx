@@ -18,7 +18,7 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Overlay escuro, aparece no mobile quando a sidebar está aberta */}
+      {/* Overlay escuro, aparece no mobile com sidebar está aberta */}
       {aberta && (
         <div
           className="fixed inset-0 bg-black/50 z-20 lg:hidden"
@@ -73,7 +73,6 @@ export default function Sidebar() {
             );
           })}
         </nav>
-
       </aside>
     </>
   );
