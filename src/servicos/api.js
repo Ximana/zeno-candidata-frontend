@@ -2,14 +2,14 @@
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
-// Função genérica para pedidos JSON (GET, POST, PUT, DELETE)
+// Função para pedidos JSON (GET, POST, PUT, DELETE)
 async function pedido(caminho, opcoes = {}) {
   const resposta = await fetch(`${BASE_URL}${caminho}`, {
     headers: { "Content-Type": "application/json" },
     ...opcoes,
   });
 
-  // Se a resposta não for OK, lança um erro com a mensagem da API
+  // Se a resposta não for OK, mostra um erro com a mensagem da API
   if (!resposta.ok) {
     const erro = await resposta.json().catch(() => ({ erro: "Erro desconhecido" }));
     throw new Error(erro.erro || "Erro na comunicação com a API");

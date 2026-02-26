@@ -5,7 +5,7 @@ import Sidebar from "@/componentes/layout/Sidebar";
 import { SidebarProvider } from "@/componentes/layout/SidebarContext";
 
 export const metadata = {
-  title: "RecrutaApp",
+  title: "zeno-candidata Teste",
   description: "Sistema de gestão de candidatos",
 };
 
@@ -15,7 +15,7 @@ export default function RootLayout({ children }) {
       <body>
         {/* O SidebarProvider envolve tudo para partilhar o estado da sidebar */}
         <SidebarProvider>
-          {/* h-screen + overflow-hidden no pai para a sidebar ficar presa na altura do ecrã */}
+          {/* h-screen e overflow-hidden no pai para a sidebar ficar presa na altura do ecrã */}
           <div className="flex h-screen overflow-hidden">
             <Sidebar />
             {/* O main tem overflow-y-auto para o conteúdo fazer scroll, não a página toda */}

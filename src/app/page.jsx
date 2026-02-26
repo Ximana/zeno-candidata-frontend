@@ -8,20 +8,6 @@ import { listarVagas } from "@/servicos/vagaServico";
 import { listarCandidaturas } from "@/servicos/candidaturaServico";
 import { iniciais, formatarData } from "@/utils/helpers";
 
-function CardEstatistica({ label, valor, icone: Icone, cor }) {
-  return (
-    <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm flex items-center gap-4">
-      <div className={`p-3 rounded-xl ${cor}`}>
-        <Icone size={22} className="text-white" />
-      </div>
-      <div>
-        <p className="text-2xl font-bold text-gray-800">{valor}</p>
-        <p className="text-sm text-gray-500">{label}</p>
-      </div>
-    </div>
-  );
-}
-
 const coresEstado = {
   "Em análise": "bg-yellow-100 text-yellow-700",
   Aprovado: "bg-emerald-100 text-emerald-700",

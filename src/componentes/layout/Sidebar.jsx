@@ -35,7 +35,7 @@ export default function Sidebar() {
           lg:relative lg:translate-x-0 lg:z-auto lg:h-full lg:shrink-0
         `}
       >
-        {/* Logo + botão fechar (só no mobile) */}
+        {/* Logo e botão fechar (só no mobile) */}
         <div className="px-6 py-6 border-b border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
